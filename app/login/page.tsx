@@ -1,12 +1,31 @@
+"use client"
 import { FaGithub } from "react-icons/fa";
+import { ClientSafeProvider, getProviders, LiteralUnion, signIn } from "next-auth/react"
+import { BuiltInProviderType } from "next-auth/providers/index";
+import { useEffect, useState } from "react";
+
+function GithubLoginButton({ providerId }: { providerId: string }) {
+    return (
+        <button
+            onClick={() => signIn(providerId, { callbackUrl: "/" })}
+            className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex items-center"
+        >
+            <FaGithub className="mr-2" />
+            Githubでログイン
+        </button>
+    );
+}
 
 
-function Login() {
-    // const providers = await getProviders().then((res: any) => {
-    //   // console.log(res, "<<<<< : provider response");
-    //   // console.log(res?.github.name);
-    //   return res;
-    // });
+export default function Login() {
+    const [providers, setProviders] = useState<Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null>(null);
+
+    useEffect(() => {
+        getProviders().then(providers => {
+            setProviders(providers);
+        })
+    }, []);
+    console.log(providers);
 
     return (
         <div className="flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
@@ -17,16 +36,13 @@ function Login() {
                     </h2>
                 </div>
                 <div className="mt-8 space-y-6">
-                    <div className="flex justify-center text-center">
-                        <button className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex items-center">
-                            <FaGithub className="mr-2" />
-                            Githubでログイン
-                        </button>
-                    </div>
+                    {providers && Object.values(providers).map((provider) => (
+                        <div key={provider.id} className="flex justify-center text-center">
+                            <GithubLoginButton providerId={provider.id} />
+                        </div>
+                    ))}
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
-
-export default Login;
