@@ -21,7 +21,7 @@ type Props = {
 }
 
 const Book = ({ book }: Props) => {
-    console.log(book);
+    // console.log(book);
     return (
         <>
             <style jsx global>
