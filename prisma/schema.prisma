@@ -1,0 +1,16 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // データベースプロバイダとしてPostgreSQLを使用することを指定
+  url      = env("POSTGRES_PRISMA_URL") // データベース接続用のURL
+  directUrl =env("POSTGRES_URL_NON_POOLING") // 直接データベースを接続する際に使用するURL
+  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // migration用のシャドウDBのURL。本番DBに影響を与えることなくmigraionを実行
+}

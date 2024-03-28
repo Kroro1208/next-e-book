@@ -1,10 +1,10 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
+// import GoogleProvider from "next-auth/providers/google";
+import prisma from "../prisma";
 
-const prisma = new PrismaClient();
-
+// GitHubで認証されると同時にprismaにユーザーデータが保存される
 export const authOptions: NextAuthOptions = {
   debug: false,
   providers: [
@@ -12,6 +12,12 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GITHUB_ID!,
       clientSecret: process.env.GITHUB_SECRET!,
     }),
+    // GoogleProvider({
+    //   //Google認証プロバイダーの設定を追加
+    //   clientId: process.env.GOOGLE_ID!,
+    //   clientSecret: process.env.GOOGLE_SECRET!,
+    //   authorization: { params: { prompt: "consent", access_type: "offline" } }, // オプションでスコープやプロンプトタイプを指定可能
+    // }),
   ],
   adapter: PrismaAdapter(prisma),
   // フロントにセッション情報を渡す
