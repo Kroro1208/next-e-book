@@ -4,8 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import React from 'react';
 import icon from '../logo.svg'
+import { useSession } from "next-auth/react";
 
 const Header = () => {
+    const { data: session } = useSession();
+    const user = session?.user;
+    console.log(user);
     return (
         <header className="bg-slate-600 text-gray-200 shadow-lg">
             <nav className=" flex items-center justify-between p-4">
@@ -22,7 +26,11 @@ const Header = () => {
                         Login
                     </Link>
                     <Link href='/profile'>
-                        <Image width={50} height={50} alt='profile-icon' src={icon} />
+                        <Image
+                            width={50}
+                            height={50}
+                            alt='profile-icon'
+                            src={user?.image || icon} />
                     </Link>
                 </div>
             </nav>

@@ -25,6 +25,7 @@ export default function Login() {
             setProviders(providers);
         })
     }, []);
+
     console.log(providers);
 
     return (
