@@ -4,12 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import React from 'react';
 import icon from '../logo.svg'
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const Header = () => {
     const { data: session } = useSession();
     const user = session?.user;
-    console.log(user);
+    const HandleLogout = async () => {
+        await signOut({ callbackUrl: '/' });
+
+    }
     return (
         <header className="bg-slate-600 text-gray-200 shadow-lg">
             <nav className=" flex items-center justify-between p-4">
@@ -21,10 +24,19 @@ const Header = () => {
                         className="text-gray-200 hover:text-gray-700 px-3 py-2 text-lg font-medium border-b-2 border-transparent hover:border-white transition-all duration-500">
                         Home
                     </Link>
-                    <Link href='/login'
-                        className="text-gray-200 hover:text-gray-500 px-3 py-2 text-lg font-medium border-b-2 border-transparent hover:border-white transition-all duration-500">
-                        Login
-                    </Link>
+                    {
+                        user ?
+                            <button
+                                className="text-gray-200 hover:text-gray-500 px-3 py-2 text-lg font-medium border-b-2 border-transparent hover:border-white transition-all duration-500"
+                                onClick={HandleLogout}>
+                                Logout
+                            </button>
+                            :
+                            <Link href='/login'
+                                className="text-gray-200 hover:text-gray-500 px-3 py-2 text-lg font-medium border-b-2 border-transparent hover:border-white transition-all duration-500">
+                                Login
+                            </Link>
+                    }
                     <Link href='/profile'>
                         <Image
                             width={50}
