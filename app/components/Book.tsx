@@ -1,23 +1,10 @@
 'use client'
 
+import { BookType } from "@/types/types";
 import Image from "next/image";
 
 type Props = {
-    book: {
-        id: number;
-        title: string;
-        img: string;
-        price: number;
-        author: {
-            id: number;
-            name: string;
-            description: string;
-            profile_icon: string;
-        };
-        content: string;
-        created_at: string;
-        updated_at: string;
-    };
+    book: BookType;
 }
 
 const Book = ({ book }: Props) => {
@@ -47,7 +34,7 @@ const Book = ({ book }: Props) => {
                 >
                     <Image
                         priority
-                        src={book.img}
+                        src={book.thumbnail.url}
                         alt={book.title}
                         width={450}
                         height={450}
