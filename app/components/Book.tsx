@@ -13,7 +13,7 @@ type Props = {
 const Book = ({ book }: Props) => {
     const [showModal, setShowModal] = useState(false);
     const { data: session } = useSession();
-    const user = session?.user;
+    const user: any = session?.user;
     const router = useRouter();
 
     const startCheckout = async () => {
@@ -23,7 +23,9 @@ const Book = ({ book }: Props) => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     title: book.title,
-                    price: book.price
+                    price: book.price,
+                    userId: user?.id,
+                    bookId: book.id
                 })
             });
             const responseData = await response.json();
