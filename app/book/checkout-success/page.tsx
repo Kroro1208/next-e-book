@@ -1,43 +1,35 @@
 "use client"
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import useSWR from 'swr';
+
+// カスタムフェッチャー関数
+const fetcher = async (url: string, sessionId: string) => {
+    const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId })
+    });
+
+    if (!res.ok) {
+        throw new Error('サーバーエラーが発生しました');
+    }
+
+    return res.json();
+};
 
 const CheckoutSuccessPage = () => {
     const searchParams = useSearchParams();
     const sessionId = searchParams.get("session_id");
-    const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-    const [message, setMessage] = useState('');
 
-    useEffect(() => {
-        const fetchData = async () => {
-            if (sessionId) {
-                try {
-                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/checkout/success`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ sessionId })
-                    });
+    const { data, error } = useSWR(
+        sessionId ? [`${process.env.NEXT_PUBLIC_API_URL}/checkout/success`, sessionId] : null,
+        ([url, sessionId]) => fetcher(url, sessionId)
+    );
 
-                    if (!res.ok) {
-                        throw new Error('サーバーエラーが発生しました');
-                    }
-
-                    const data = await res.json();
-                    setStatus('success');
-                    setMessage(data.message || '購入が正常に処理されました');
-                } catch (error: any) {
-                    console.error('エラーが発生しました:', error);
-                    setStatus('error');
-                    setMessage(error.message || 'エラーが発生しました');
-                }
-            } else {
-                setStatus('error');
-                setMessage('セッションIDが見つかりません');
-            }
-        };
-        fetchData();
-    }, [sessionId]);
+    const status = error ? 'error' : !data ? 'loading' : 'success';
+    const message = error ? (error.message || 'エラーが発生しました') :
+        data ? (data.message || '購入が正常に処理されました') : '';
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
