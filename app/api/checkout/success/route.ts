@@ -6,6 +6,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20",
 });
 
+// ②購入商品をDBに保存する処理
 export async function POST(request: Request) {
   try {
     const { sessionId } = await request.json();

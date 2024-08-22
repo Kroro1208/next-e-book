@@ -16,6 +16,7 @@ const Book = ({ book }: Props) => {
     const user: any = session?.user;
     const router = useRouter();
 
+    // ①購入ボタン押してからの決済処理
     const startCheckout = async () => {
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {

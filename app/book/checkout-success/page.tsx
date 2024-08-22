@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 
+// ③　②の処理をuseSWRで呼び出し
 // カスタムフェッチャー関数
 const fetcher = async (url: string, sessionId: string) => {
     const res = await fetch(url, {
