@@ -1,6 +1,7 @@
 "use client"
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 
 // ③　②の処理をuseSWRで呼び出し
@@ -28,6 +29,8 @@ const CheckoutSuccessPage = () => {
         ([url, sessionId]) => fetcher(url, sessionId)
     );
 
+    const bookUrl = data?.purchase?.bookId;
+
     const status = error ? 'error' : !data ? 'loading' : 'success';
     const message = error ? (error.message || 'エラーが発生しました') :
         data ? (data.message || '購入が正常に処理されました') : '';
@@ -48,7 +51,7 @@ const CheckoutSuccessPage = () => {
                             ご購入いただいた内容の詳細は登録されたメールアドレスに送信されます
                         </p>
                         <div className="flex justify-center">
-                            <Link href="/purchased-article" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+                            <Link href={`/book/${bookUrl}`} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300">
                                 購入した記事を読む
                             </Link>
                         </div>
