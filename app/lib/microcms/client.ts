@@ -13,3 +13,12 @@ export const getAllBooks = async () => {
 
   return allBooks;
 };
+
+export const getBookDetails = async (contentId: string) => {
+  const detailBook = await client.getListDetail<BookType>({
+    endpoint: "fittech",
+    contentId,
+  });
+
+  return detailBook;
+};

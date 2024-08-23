@@ -1,16 +1,21 @@
+import { getBookDetails } from '@/app/lib/microcms/client';
 import Image from 'next/image';
 import { FiBookOpen, FiDownload, FiShare2 } from 'react-icons/fi';
 
-const DetailPage = () => {
-    // この部分は実際のデータフェッチロジックに置き換えてください
-    const book = {
-        title: "The Future of AI: Emerging Trends and Technologies",
-        Image: "/placeholder-book-cover.jpg",
-        description: "Explore the cutting-edge developments in artificial intelligence and their potential impact on various industries. Dr. Chen provides insights into machine learning, neural networks, and the ethical considerations surrounding AI adoption.",
-        price: "15000円",
-        pages: 320,
-        publishDate: "2024-05-15",
-    };
+// サーバー側で日付をフォーマットする関数
+const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return new Date(dateString).toLocaleDateString('ja-JP', options);
+};
+
+const DetailPage = async ({ params }: { params: { id: string } }) => {
+    const book = await getBookDetails(params.id);
+
+    // 価格の表示を決定
+    const priceDisplay = typeof book.price === 'number' ? `${book.price}円` : "購入済み";
+
+    // HTMLコンテンツを安全に表示するための関数
+    const createMarkup = (htmlContent: string) => ({ __html: htmlContent });
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -18,19 +23,19 @@ const DetailPage = () => {
                 <div className="md:flex-shrink-0">
                     <Image
                         className="h-96 w-full object-cover md:w-64"
-                        src={book.Image}
+                        src={book.thumbnail.url}
                         alt={book.title}
                         width={256}
                         height={384}
+                        priority
                     />
                 </div>
                 <div className="p-8">
                     <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">E-Book</div>
                     <h1 className="mt-2 text-3xl leading-tight font-bold text-gray-900">{book.title}</h1>
-                    <p className="mt-4 text-gray-500">{book.description}</p>
+                    <div className="mt-4 text-gray-500" dangerouslySetInnerHTML={createMarkup(book.content)} />
                     <div className="mt-6 flex items-center">
-                        <span className="text-2xl font-bold text-gray-900">{book.price}</span>
-                        <span className="ml-2 text-sm text-gray-600">({book.pages} pages)</span>
+                        <span className="text-2xl font-bold text-gray-900">{priceDisplay}</span>
                     </div>
                     <div className="mt-6 flex space-x-4">
                         <button className="flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
@@ -47,7 +52,10 @@ const DetailPage = () => {
                         </button>
                     </div>
                     <div className="mt-6 text-sm text-gray-500">
-                        購入日 {new Date(book.publishDate).toLocaleDateString()}
+                        購入日 {formatDate(book.createdAt)}
+                    </div>
+                    <div className="mt-6 text-sm text-gray-500">
+                        最終更新日 {formatDate(book.updatedAt)}
                     </div>
                 </div>
             </div>
@@ -59,7 +67,6 @@ const DetailPage = () => {
                     <li>Chapter 3: Neural Networks and Deep Learning</li>
                     <li>Chapter 4: Natural Language Processing</li>
                     <li>Chapter 5: Computer Vision and Image Recognition</li>
-                    {/* Add more chapters as needed */}
                 </ul>
             </div>
         </div>
