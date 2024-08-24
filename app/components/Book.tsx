@@ -20,6 +20,11 @@ const Book = ({ book, isPurchased }: Props) => {
     // ①購入ボタン押してからの決済処理
     const startCheckout = async () => {
         try {
+            if (isPurchased) {
+                alert('この商品は購入済みです');
+                setShowModal(false);
+                return;
+            }
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -50,11 +55,7 @@ const Book = ({ book, isPurchased }: Props) => {
     }
 
     const handlePurchase = () => {
-        if (isPurchased) {
-            alert('この商品は購入済みです');
-        } else {
-            setShowModal(true);
-        }
+        setShowModal(true);
     }
 
     const handleCancel = () => {
