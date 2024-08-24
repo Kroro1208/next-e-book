@@ -8,9 +8,10 @@ import { useState } from "react";
 
 type Props = {
     book: BookType;
+    isPurchased: boolean;
 }
 
-const Book = ({ book }: Props) => {
+const Book = ({ book, isPurchased }: Props) => {
     const [showModal, setShowModal] = useState(false);
     const { data: session } = useSession();
     const user: any = session?.user;
@@ -49,7 +50,11 @@ const Book = ({ book }: Props) => {
     }
 
     const handlePurchase = () => {
-        setShowModal(true);
+        if (isPurchased) {
+            alert('この商品は購入済みです');
+        } else {
+            setShowModal(true);
+        }
     }
 
     const handleCancel = () => {

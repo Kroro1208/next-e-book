@@ -12,7 +12,6 @@ datasource db {
   provider = "postgresql" // データベースプロバイダとしてPostgreSQLを使用することを指定
   url      = env("POSTGRES_PRISMA_URL") // データベース接続用のURL
   directUrl =env("POSTGRES_URL_NON_POOLING") // 直接データベースを接続する際に使用するURL
-  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // migration用のシャドウDBのURL。本番DBに影響を与えることなくmigraionを実行
 }
 
 model Account {
