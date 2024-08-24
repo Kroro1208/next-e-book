@@ -3,7 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { signOut } from "next-auth/react";
 import icon from '../logo.svg'
 
 interface HeaderProps {
@@ -16,11 +15,6 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ user }) => {
     const [isOpen, setIsOpen] = useState(false);
-
-    const handleLogout = () => {
-        signOut({ callbackUrl: '/' });
-    };
-
     return (
         <header className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -36,14 +30,14 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
                             {user ? (
                                 <>
                                     <NavLink href="/profile">Profile</NavLink>
-                                    <button
-                                        className="text-gray-300 hover:bg-purple-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all duration-300"
-                                        onClick={handleLogout}>
+                                    <Link
+                                        href={"/api/auth/signout"}
+                                        className="text-gray-300 hover:bg-purple-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-all duration-300">
                                         Logout
-                                    </button>
+                                    </Link>
                                 </>
                             ) : (
-                                <NavLink href="/login">Login</NavLink>
+                                <Link href={"api/auth/signin"}>Login</Link>
                             )}
                         </div>
                     </div>
@@ -92,11 +86,12 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
                         {user ? (
                             <>
                                 <NavLink href="/profile" mobile>Profile</NavLink>
-                                <button
+                                <Link
+                                    href={"/api/auth/signout"}
                                     className="text-gray-300 hover:bg-purple-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
-                                    onClick={handleLogout}>
+                                >
                                     Logout
-                                </button>
+                                </Link>
                             </>
                         ) : (
                             <NavLink href="/login" mobile>Login</NavLink>
