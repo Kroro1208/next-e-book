@@ -1,4 +1,4 @@
-import { BookType } from "@/types/types";
+import { BookType, Purchase, User } from "@/types/types";
 import Book from "./components/Book";
 import { getAllBooks } from "./lib/microcms/client";
 import { getServerSession } from "next-auth";
@@ -8,14 +8,14 @@ export default async function Home() {
   const { contents } = await getAllBooks();
   // useSession()はclientコンポーネント仕様なので、ここではgetServerSession()を選択
   const session = await getServerSession(authOptions);
-  const user: any = session?.user;
+  const user = session?.user as User;
   let purchaseBookIds: string[] = [];
 
   if (user) {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/purchases/${user.id}`, { cache: "no-store" });
     const purchasesData = await response.json();
 
-    purchaseBookIds = purchasesData.map((purchasesBook: any) => purchasesBook.bookId)
+    purchaseBookIds = purchasesData.map((purchasesBook: Purchase) => purchasesBook.bookId)
   }
 
   return (
@@ -24,7 +24,7 @@ export default async function Home() {
         Next E-BOOK
       </h2>
       {contents.map((book: BookType) => (
-        <Book key={book.id} book={book} isPurchased={purchaseBookIds.includes(String(book.id))} />
+        <Book key={book.id} book={book} isPurchased={purchaseBookIds.includes(book.id)} />
       ))}
     </main>
   );
