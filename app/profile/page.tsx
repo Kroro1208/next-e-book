@@ -4,28 +4,41 @@ import Link from "next/link";
 import { authOptions } from "../lib/next-auth/options";
 import { BookType, Purchase, User } from "@/types/types";
 import icon from '../logo.svg'
-import { getAllBooks } from "../lib/microcms/client";
+import { getAllBooks, getBookDetails } from "../lib/microcms/client";
 import DOMPurify from 'isomorphic-dompurify';
 
-async function getUserPurchases(userId: string) {
-    const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/purchases/${userId}`,
-        { cache: "no-store" }
-    );
-    const purchases = await response.json();
-    return purchases.map((purchase: Purchase) => purchase.bookId);
-}
+// async function getUserPurchases(userId: string) {
+//     const response = await fetch(
+//         `${process.env.NEXT_PUBLIC_API_URL}/purchases/${userId}`,
+//         { cache: "no-store" }
+//     );
+//     const purchases = await response.json();
+//     return purchases.map((purchase: Purchase) => purchase.bookId);
+// }
 
 export default async function ProfilePage() {
     const session = await getServerSession(authOptions);
     const user = session?.user as User;
 
-    const { contents: allBooks } = await getAllBooks();
-    const purchasedBookIds = await getUserPurchases(user.id);
+    let purchasesDetailBooks: BookType[] = [];
 
-    const purchasedBooks = allBooks.filter((book: BookType) =>
-        purchasedBookIds.includes(book.id)
-    );
+    if (user) {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/purchases/${user.id}`, { cache: "no-store" });
+        const purchasesData = await response.json();
+
+        purchasesDetailBooks = await Promise.all(
+            purchasesData.map(async (book: Purchase) => {
+                return await getBookDetails(book.bookId);
+            })
+        );
+    }
+
+    // const { contents: allBooks } = await getAllBooks();
+    // const purchasedBookIds = await getUserPurchases(user.id);
+
+    // const purchasedBooks = allBooks.filter((book: BookType) =>
+    //     purchasedBookIds.includes(book.id)
+    // );
 
     const sanitizeHTML = (htmlContent: string) => ({
         __html: DOMPurify.sanitize(htmlContent)
@@ -66,7 +79,7 @@ export default async function ProfilePage() {
                 <div className="mt-12">
                     <h3 className="text-2xl font-semibold text-gray-800 mb-6">購入した記事</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {purchasedBooks.map((book: BookType) => (
+                        {purchasesDetailBooks.map((book: BookType) => (
                             <Link href={`/book/${book.id}`} key={book.id} className="block">
                                 <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105 cursor-pointer">
                                     <Image
