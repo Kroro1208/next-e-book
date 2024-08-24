@@ -1,6 +1,7 @@
 import { getBookDetails } from '@/app/lib/microcms/client';
 import Image from 'next/image';
 import { FiBookOpen, FiDownload, FiShare2 } from 'react-icons/fi';
+import DOMPurify from 'isomorphic-dompurify';
 
 // サーバー側で日付をフォーマットする関数
 const formatDate = (dateString: string) => {
@@ -15,7 +16,9 @@ const DetailPage = async ({ params }: { params: { id: string } }) => {
     const priceDisplay = typeof book.price === 'number' ? `${book.price}円` : "購入済み";
 
     // HTMLコンテンツを安全に表示するための関数
-    const createMarkup = (htmlContent: string) => ({ __html: htmlContent });
+    const sanitizeHTML = (htmlContent: string) => ({
+        __html: DOMPurify.sanitize(htmlContent)
+    });
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -33,7 +36,7 @@ const DetailPage = async ({ params }: { params: { id: string } }) => {
                 <div className="p-8">
                     <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">E-Book</div>
                     <h1 className="mt-2 text-3xl leading-tight font-bold text-gray-900">{book.title}</h1>
-                    <div className="mt-4 text-gray-500" dangerouslySetInnerHTML={createMarkup(book.content)} />
+                    <div className="mt-4 text-gray-500 prose" dangerouslySetInnerHTML={sanitizeHTML(book.content)} />
                     <div className="mt-6 flex items-center">
                         <span className="text-2xl font-bold text-gray-900">{priceDisplay}</span>
                     </div>
