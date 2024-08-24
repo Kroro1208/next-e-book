@@ -5,6 +5,8 @@ import Header from "./components/Header";
 import { NextAuthProvider } from "./lib/next-auth/provider";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "./lib/next-auth/options";
+import { Suspense } from "react";
+import Loading from "./components/Loading";
 
 const notoSansJp = Noto_Sans_JP({ subsets: ["latin"], weight: ['400'] });
 
@@ -25,7 +27,9 @@ export default async function RootLayout({
       <body className={notoSansJp.className}>
         <NextAuthProvider>
           <Header user={session?.user} />
-          {children}
+          <Suspense fallback={<Loading />}>
+            {children}
+          </Suspense>
         </NextAuthProvider>
       </body>
     </html>
