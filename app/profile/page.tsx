@@ -26,6 +26,7 @@ export default async function ProfilePage() {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/purchases/${user.id}`, { cache: "no-store" });
         const purchasesData = await response.json();
 
+        // 複数の購入本のデータ取得するのでPromise.all()使用
         purchasesDetailBooks = await Promise.all(
             purchasesData.map(async (book: Purchase) => {
                 return await getBookDetails(book.bookId);
