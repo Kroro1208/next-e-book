@@ -1,7 +1,8 @@
 import { getServerSession } from "next-auth";
 import Image from "next/image";
+import Link from "next/link";
 import { authOptions } from "../lib/next-auth/options";
-import { BookType, User } from "@/types/types";
+import { BookType, Purchase, User } from "@/types/types";
 import icon from '../logo.svg'
 import { getAllBooks } from "../lib/microcms/client";
 import DOMPurify from 'isomorphic-dompurify';
@@ -12,7 +13,7 @@ async function getUserPurchases(userId: string) {
         { cache: "no-store" }
     );
     const purchases = await response.json();
-    return purchases.map((purchase: any) => purchase.bookId);
+    return purchases.map((purchase: Purchase) => purchase.bookId);
 }
 
 export default async function ProfilePage() {
@@ -66,19 +67,21 @@ export default async function ProfilePage() {
                     <h3 className="text-2xl font-semibold text-gray-800 mb-6">購入した記事</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {purchasedBooks.map((book: BookType) => (
-                            <div key={book.id} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105">
-                                <Image
-                                    src={book.thumbnail.url}
-                                    alt={book.title}
-                                    width={400}
-                                    height={200}
-                                    className="w-full h-48 object-cover"
-                                />
-                                <div className="p-4 max-h-36">
-                                    <h4 className="font-semibold text-lg mb-2">{book.title}</h4>
-                                    <div className="text-gray-600 text-sm truncate prose line-clamp-2" dangerouslySetInnerHTML={sanitizeHTML(book.content)} />
+                            <Link href={`/book/${book.id}`} key={book.id} className="block">
+                                <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105 cursor-pointer">
+                                    <Image
+                                        src={book.thumbnail.url}
+                                        alt={book.title}
+                                        width={400}
+                                        height={200}
+                                        className="w-full h-48 object-cover"
+                                    />
+                                    <div className="p-4 max-h-44">
+                                        <h4 className="font-semibold text-lg mb-2">{book.title}</h4>
+                                        <div className="text-gray-600 text-sm truncate prose line-clamp-4 overflow-hidden" dangerouslySetInnerHTML={sanitizeHTML(book.content)} />
+                                    </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </div>
