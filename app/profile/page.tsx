@@ -4,8 +4,9 @@ import Link from "next/link";
 import { authOptions } from "../lib/next-auth/options";
 import { BookType, Purchase, User } from "@/types/types";
 import icon from '../logo.svg'
-import { getAllBooks, getBookDetails } from "../lib/microcms/client";
+import { getBookDetails } from "../lib/microcms/client";
 import DOMPurify from 'isomorphic-dompurify';
+import { redirect } from "next/navigation";
 
 // async function getUserPurchases(userId: string) {
 //     const response = await fetch(
@@ -19,6 +20,10 @@ import DOMPurify from 'isomorphic-dompurify';
 export default async function ProfilePage() {
     const session = await getServerSession(authOptions);
     const user = session?.user as User;
+
+    if (!user) {
+        redirect("/api/auth/signin")
+    }
 
     let purchasesDetailBooks: BookType[] = [];
 
@@ -54,7 +59,7 @@ export default async function ProfilePage() {
                         <div className="flex items-center space-x-6">
                             <div className="relative w-24 h-24 rounded-full overflow-hidden ring-4 ring-purple-200">
                                 <Image
-                                    src={user.image || icon}
+                                    src={user?.image || icon}
                                     alt="user profile_icon"
                                     fill
                                     style={{ objectFit: 'cover' }}
@@ -62,8 +67,8 @@ export default async function ProfilePage() {
                                 />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-semibold text-gray-800">{user.name}</h2>
-                                <p className="text-gray-600 mt-1">{user.email}</p>
+                                <h2 className="text-2xl font-semibold text-gray-800">{user?.name}</h2>
+                                <p className="text-gray-600 mt-1">{user?.email}</p>
                             </div>
                         </div>
 
