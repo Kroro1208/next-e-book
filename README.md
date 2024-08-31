@@ -1,3 +1,3 @@
 ## Project Demo
 
-[!デモ動画]("/nextebook.gif")
+![デモ動画]("nextebook.gif")
